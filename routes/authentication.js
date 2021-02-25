@@ -60,15 +60,15 @@ router.post("/login",(req,res)=>{
   if (result.err)
   return res.status(400).send(result.error.details[0].message);
 
-  const loginQuery=`SELECT * from customers where CustUserName="${body.CustUserName}"`;
+  const loginQuery=`SELECT * from customers where CustUserName="${body.CustUserName}"or CustEmail="${body.CustEmail}"`;
 
   // Running Login Query
     db.query(loginQuery, async(err,result)=>{  
     if (err) throw error;
-    if(result.length==0) return res.status(400).send('invalid userName or password');
+    if(result.length==0) return res.status(400).send('invalid userName or Email');
    //comparing password  
     const isPasswordMatched= await bcrypt.compare(body.CustPassword,result[0].CustPassword);
-    if(!isPasswordMatched) return res.status(400).send('invalid userName or Password');
+    if(!isPasswordMatched) return res.status(400).send('invalid Password');
   
    // Creating JWT token using provided pattern   
     const token=jwt.sign({CustomerID: result[0].CustomerId}, 'ieuriuifjfksllaeelklkqle');
