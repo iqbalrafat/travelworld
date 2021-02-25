@@ -1,8 +1,10 @@
 const express = require('express');
 const Joi =require('@hapi/joi');
 const jwt=require('jsonwebtoken');
-const app =express();
+const db = require('../dataBaseConnection/mySQL')
 const router =require('express').Router();
+const bcrypt = require('bcryptjs');
+const nodemailer = require("nodemailer");
 
 router.post('/registration', (req,res)=>{
       const {body}=req;
@@ -46,4 +48,49 @@ router.post('/registration', (req,res)=>{
       });
     });
 });
+
+//Add login route
+router.post("/login",(req,res)=>{
+    let {body}=req;
+    const loginSchema=Joi.Object({
+      CustEmail=Joi.string.max(50).required(),
+      CustPassword=Joi.string.min(8).require()   
+    })
+    const result=loginSchema.validate(body);
+  if (result.err)
+  return res.status(400).send(result.error.details[0].message);
+
+  const loginQuery=`SELECT * from customers where CustUserName="${body.CustUserName}"`;
+
+  // Running Login Query
+    db.query(loginQuery, async(err,result)=>{  
+    if (err) throw error;
+    if(result.length==0) return res.status(400).send('invalid userName or password');
+   //comparing password  
+    const isPasswordMatched= await bcrypt.compare(body.CustPassword,result[0].CustPassword);
+    if(!isPasswordMatched) return res.status(400).send('invalid userName or Password');
+  
+   // Creating JWT token using provided pattern   
+    const token=jwt.sign({CustomerID: result[0].CustomerId}, 'ieuriuifjfksllaeelklkqle');
+    res.cookie('auth_token', token,{
+      maxAge: 72000000,
+      httpOnly: true,
+    });
+
+    res.status(200).end()
+  }); 
+});
+
+
+
+
+
+})
+
+
+
+
+
+
+
 module.exports=router;
