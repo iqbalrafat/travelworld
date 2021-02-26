@@ -72,9 +72,8 @@ router.post("/login",(req,res)=>{
   
    // Creating JWT token using provided pattern   
     const token=jwt.sign({CustomerID: result[0].CustomerId}, 'ieuriuifjfksllaeelklkqle');
-    res.cookie('auth_token', token,{
-      maxAge: 72000000,
-      httpOnly: true,
+    res.cookie('auth_token', token,
+    {maxAge: 72000000,httpOnly: true,
     });
     res.status(200).end()
   }); 
