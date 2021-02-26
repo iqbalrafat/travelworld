@@ -23,6 +23,6 @@ app.use('/api', router);
 
 
 
-app.listen(3002,(req,res)=>{ 
+app.listen(3000,(req,res)=>{ 
   console.log("server is running on port 3002");
 })

@@ -1,8 +1,8 @@
-const mySQL=require('mySQL');
+const mysql = require('mysql');
 const mySQLConnection = mysql.createConnection({
-  host:process.env.DB_HOST,
-  user:process.env.DB_USER,
-  database:process.env.DATABASE_NAME
+  host:"localhost",
+  user:"root",
+  database:"travelexperts"
 });
 mySQLConnection.connect(function(err){
   if (err) throw err;

@@ -1,7 +1,7 @@
 const express = require('express');
 const Joi =require('@hapi/joi');
 const jwt=require('jsonwebtoken');
-const db = require('../dataBaseConnection/mySQL')
+const db = require('../databaseConnection/mySQL');
 const router =require('express').Router();
 const bcrypt = require('bcryptjs');
 const nodemailer = require("nodemailer");
@@ -17,7 +17,7 @@ router.post('/registration', (req,res)=>{
         CustProv:Joi.string().max(50).require(),
         CustPostal:Joi.string().max(7).require(),
         CustCountry:Joi.string().max(50).require(),
-        CustPhone:Joi.string().max(10).require(),
+        CustBusPhone:Joi.string().max(10).require(),
         CustEmail:Joi.string().max(25).require(),
         CustUserName:Joi.string().min(6).require(),
         CustPassword:Joi.string().min(8).require(),
@@ -26,7 +26,7 @@ router.post('/registration', (req,res)=>{
   if(result.error)
   return res.status(400).send(result.error.details[0].message);
   const userExist=`SELECT * FROM customers where CustUserName="${body.CustUserName}" or CustEmail="${body.CustEmail}"`;
-  const registerQuery="INSERT INTO `Customers` (`CustFirstName`, `CustLastName`,`CustAddress`,`CustCity`,`CustProv`,`CustPostal`,`CustCountry`,`CustPhone`,"+
+  const registerQuery="INSERT INTO `Customers` (`CustFirstName`, `CustLastName`,`CustAddress`,`CustCity`,`CustProv`,`CustPostal`,`CustCountry`,`CustBusPhone`,"+
   "`CustEmail`,`CustUserName`,`CustPassword`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
 
   db.query(userExist,async(err,result)=>{
@@ -53,8 +53,8 @@ router.post('/registration', (req,res)=>{
 router.post("/login",(req,res)=>{
     let {body}=req;
     const loginSchema=Joi.Object({
-      CustEmail=Joi.string.max(50).required(),
-      CustPassword=Joi.string.min(8).require()   
+      CustEmail:Joi.string().max(25).required(),
+      CustPassword:Joi.string.min(8).required()   
     })
     const result=loginSchema.validate(body);
   if (result.err)
@@ -76,21 +76,7 @@ router.post("/login",(req,res)=>{
       maxAge: 72000000,
       httpOnly: true,
     });
-
     res.status(200).end()
   }); 
 });
-
-
-
-
-
-})
-
-
-
-
-
-
-
 module.exports=router;
