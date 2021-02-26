@@ -17,4 +17,12 @@ router.get('/agentsData',(req,res)=>{
     res.status(200).send(result);
   });
 });
-
+//Retrieve agent linked with specific agency
+router.get('agencyData/:id',(req,res)=>{
+  const agentDataQuery=`SELECT * FROM agents where AgencyID="${req.params.id}"`;
+  db.query(agentDataQuery,(error,result)=>{
+    if(error)throw error;
+    res.status(200).send(result);
+  });
+});
+module.exports=router;
